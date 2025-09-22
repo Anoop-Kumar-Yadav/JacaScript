@@ -98,42 +98,68 @@ console.log("Symbol.keyFor(s1):", Symbol.keyFor(s1)); // "app.id"
 
 console.log("\n--- Well-Known Symbols ---");
 
-// a) Symbol.iterator — Making an object iterable
+// a) Symbol.iterator — The "How to Loop Me" Hook
+// The Problem: By default, you cannot use a `for...of` loop on a plain object.
+// The `for...of` loop needs to know *how* to iterate.
+// How it Works: The loop looks for a method on the object named `[Symbol.iterator]`.
+// This method must return an "iterator" object, which has a `next()` method.
+// The `next()` method is called repeatedly to get each value.
 const range = {
-  from: 1,
+  from: 1, 
   to: 3,
-  [Symbol.iterator]() {
+  // By adding this method with a computed property name, we make the object "iterable".
+  [Symbol.iterator]() {   
     let current = this.from;
     const last = this.to;
+
+    // This method must return an iterator object.
     return {
+      // The iterator object must have a `next()` method. `for...of` calls this.
       next: () => ({
+        // `value` is the next item in the sequence.
         value: current <= last ? current++ : undefined,
+        // `done` is a boolean that tells the loop when to stop.
         done: current > last,
       }),
     };
   },
 };
 console.log("Custom iterator with for...of:");
+// Now this works, because our object has provided the instructions.
 for (let n of range) {
   console.log("  -", n); // 1, 2, 3
 }
 
-// b) Symbol.toPrimitive — Customizing type coercion
+// b) Symbol.toPrimitive — The "How to Convert Me" Hook
+// The Problem: By default, using an object in a math or string context results
+// in "[object Object]", which is not useful.
+// How it Works: When JavaScript needs to convert an object to a primitive, it
+// looks for a method named `[Symbol.toPrimitive]`. It passes a "hint" to this
+// method: "string", "number", or "default".
 const money = {
   value: 1000,
+  // This method gets called by the engine during type coercion.
   [Symbol.toPrimitive](hint) {
     console.log(`   (hint: ${hint})`);
+    // We can return different values based on the context.
     return hint === "string" ? `$${this.value}` : this.value;
   },
 };
 console.log("Custom coercion with Symbol.toPrimitive:");
 console.log("  String context:", String(money)); // "$1000"
 console.log("  Number context:", +money); // 1000
-console.log("  Default context (addition):", money + 500); // 1500
+console.log("  Default context (addition):", money + 500); // 1500 (hint is "default", falls back to number)
 
-// c) Symbol.hasInstance — Customizing `instanceof`
+// c) Symbol.hasInstance — The "What is an Instance of Me?" Hook
+// The Problem: The `instanceof` operator normally checks an object's prototype
+// chain. This is rigid.
+// How it Works: When you write `value instanceof MyClass`, the engine looks for a
+// *static* method on `MyClass` named `[Symbol.hasInstance]`. If found, it calls
+// that method with `value` and uses its boolean result, ignoring prototypes.
 class Even {
+  // This static method hijacks the `instanceof` operator for this class.
   static [Symbol.hasInstance](n) {
+    // Our custom logic: is `n` an even number?
     return typeof n === "number" && n % 2 === 0;
   }
 }
