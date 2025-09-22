@@ -123,3 +123,56 @@ console.log(
   "4. 9999999999999999 === 10000000000000000 is",
   9999999999999999 === 10000000000000000
 );
+
+/**
+ * 🧩 Mini-Exercises with Solutions
+ * --------------------
+ */
+console.log("\n--- Mini-Exercises with Solutions ---");
+
+// Q1: console.log(0.1 + 0.2 == 0.3);
+// ✅ Output: false
+// Step-by-step:
+// 1. JavaScript uses binary floating-point math (IEEE-754).
+// 2. Numbers like 0.1 and 0.2 cannot be represented perfectly in binary.
+// 3. Their binary approximations add up to a number that is extremely close to 0.3,
+//    but is actually `0.30000000000000004`.
+// 4. The comparison `0.30000000000000004 == 0.3` is therefore false.
+
+// Q2: console.log(Math.sqrt(-1));
+// ✅ Output: NaN
+// Step-by-step:
+// 1. The `Math.sqrt()` function calculates the square root of a number.
+// 2. In real numbers, the square root is only defined for non-negative numbers (>= 0).
+// 3. Passing a negative number results in an invalid mathematical operation.
+// 4. JavaScript represents such results with the special numeric value `NaN`.
+
+// Q3: console.log(Number(null)); console.log(Number(undefined));
+// ✅ Output: 0, then NaN
+// Step-by-step:
+// 1. The `Number()` conversion follows specific rules defined in the ECMAScript standard.
+// 2. The rule for `null` is to convert it to `0`.
+// 3. The rule for `undefined` is to convert it to `NaN`.
+
+// Q4: console.log(9999999999999999 === 10000000000000000);
+// ✅ Output: true
+// Step-by-step:
+// 1. Both numbers are larger than `Number.MAX_SAFE_INTEGER`.
+// 2. When a number exceeds this limit, JavaScript can no longer guarantee its precision.
+// 3. The engine rounds the number to the nearest representable value. In this case,
+//    `9999999999999999` is rounded up to `10000000000000000`.
+// 4. The comparison `10000000000000000 === 10000000000000000` is therefore true.
+
+/**
+ * 🧠 Interview Brain-Benders
+ * --------------------
+ *
+ * 1. Q: Why is `typeof NaN === "number"`?
+ *    A: Because `NaN` is a special value within the IEEE-754 numeric type specification. It's not a separate type; it's a specific kind of number used to represent the result of an invalid mathematical operation.
+ *
+ * 2. Q: How can you check for `NaN` safely?
+ *    A: Use `Number.isNaN(value)`. It is the most reliable method because it does not coerce its argument. The global `isNaN(value)` function will first try to convert the value to a number, which can lead to unexpected results (e.g., `isNaN("foo")` is true).
+ *
+ * 3. Q: How can you detect `-0` vs `+0`?
+ *    A: Use `Object.is(value, -0)`. For example, `Object.is(-0, 0)` returns `false`. Another clever trick is to use division: `1 / -0` results in `-Infinity`, while `1 / 0` results in `Infinity`.
+ */
